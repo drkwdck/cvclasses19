@@ -46,20 +46,26 @@ struct descriptor : public std::vector<double>
 void calculateDescriptor(const cv::Mat& image, int kernel_size, descriptor& descr)
 {
     descr.clear();
-    const double th = CV_PI / 4;
-    const double lm = 10.0;
-    const double gm = 0.75;
     cv::Mat response;
     cv::Mat mean;
     cv::Mat dev;
 
-    for (auto sig = 5; sig <= 15; sig += 5)
+    for (auto th = CV_PI / 4; th <= CV_PI; th += CV_PI / 4)
     {
-        cv::Mat kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, th, lm, gm);
-        cv::filter2D(image, response, CV_32F, kernel);
-        cv::meanStdDev(response, mean, dev);
-        descr.emplace_back(mean.at<double>(0));
-        descr.emplace_back(dev.at<double>(0));
+        for (auto lm = 4; lm < 13; lm += 3)
+        {
+            for (auto gm = 0.2; gm < 1; gm += 0.25)
+            {
+                for (auto sig = 5; sig <= 15; sig += 5)
+                {
+                    cv::Mat kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, th, lm, gm);
+                    cv::filter2D(image, response, CV_32F, kernel);
+                    cv::meanStdDev(response, mean, dev);
+                    descr.emplace_back(mean.at<double>(0));
+                    descr.emplace_back(dev.at<double>(0));
+                }
+            }
+        }
     }
 }
 }

@@ -31,6 +31,26 @@ class motion_segmentation : public cv::BackgroundSubtractor
     /// \brief ctor
     motion_segmentation();
 
+    cv::Mat getMin() const
+    {
+        return _min;
+    }
+
+    cv::Mat getMax() const
+    {
+        return _max;
+    }
+
+    cv::Mat getDiff() const
+    {
+        return _diff;
+    }
+
+    void setVarThreshold(const int& threshold)
+    {
+        _threshold = threshold;
+    }
+
     /// \see cv::BackgroundSubtractor::apply
     void apply(cv::InputArray image, cv::OutputArray fgmask, double learningRate = -1) override;
 
@@ -42,6 +62,13 @@ class motion_segmentation : public cv::BackgroundSubtractor
 
     private:
     cv::Mat bg_model_;
+    double _mu;
+    int _counter;
+    int _threshold;
+    cv::Mat _max;
+    cv::Mat _min;
+    cv::Mat _diff;
+    cv::Mat _prevImage;
 };
 
 /// \brief FAST corner detection algorithm

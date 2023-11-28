@@ -54,7 +54,7 @@ void corner_detector_fast::detect(cv::InputArray image, CV_OUT std::vector<cv::K
                 active_neg_count += (p1 < p - threshold);
             }
 
-            if (active_pos_count >= 3 || active_neg_count >= 3)
+            if ((active_pos_count >= 3 || active_neg_count >= 3) && (active_pos_count + active_neg_count >= 7))
             {
                 active_pos_count = 0;
                 active_neg_count = 0;

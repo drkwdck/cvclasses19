@@ -58,12 +58,35 @@ void corner_detector_fast::detect(cv::InputArray image, CV_OUT std::vector<cv::K
             {
                 active_pos_count = 0;
                 active_neg_count = 0;
+                bool is_prev_pos = false;
+
                 for (auto d : v)
                 {
                     auto p = image.getMat().at<unsigned char>(i, j);
                     auto p1 = image.getMat().at<unsigned char>(i + d.first, j + d.second);
-                    active_pos_count += (p1 > p + threshold);
-                    active_neg_count += (p1 < p - threshold);
+                    
+                    if (p1 > p + threshold)
+                    {
+                        if (!is_prev_pos && active_pos_count > 0)
+                        {
+                            active_pos_count = 0;
+                        }
+
+                        ++active_pos_count;
+                        is_prev_pos = true;
+                    }
+
+
+                    if (p1 < p - threshold)
+                    {
+                        if (is_prev_pos && active_neg_count > 0)
+                        {
+                            active_neg_count = 0;
+                        }
+
+                        ++active_neg_count;
+                        is_prev_pos = false;
+                    }
                 }
                 if(active_neg_count >= N || active_pos_count >= N)
                 {

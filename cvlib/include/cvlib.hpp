@@ -93,6 +93,11 @@ class corner_detector_fast : public cv::Feature2D
     {
         return "FAST_Binary";
     }
+
+    void norm_random(int s, int len_desc);
+    int radius = 3;
+    std::vector<cv::Point2f> _points_dict;
+
 };
 
 /// \brief Descriptor matched based on ratio of SSD

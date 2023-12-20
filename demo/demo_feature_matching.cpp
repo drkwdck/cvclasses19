@@ -21,8 +21,10 @@ int demo_feature_matching(int argc, char* argv[])
     cv::namedWindow(main_wnd);
     cv::namedWindow(demo_wnd);
 
-    auto detector = cv::AKAZE::create(); // \todo use your detector from cvlib
-    auto matcher = cvlib::descriptor_matcher(1.2f); //\todo add trackbar to demo_wnd to tune ratio value
+
+    int threshold = 50;
+    auto detector = cvlib::corner_detector_fast::create(); // \todo use your detector from cvlib
+    auto matcher = cvlib::descriptor_matcher(threshold); //\todo add trackbar to demo_wnd to tune ratio value
 
     /// \brief helper struct for tidy code
     struct img_features
@@ -40,6 +42,7 @@ int demo_feature_matching(int argc, char* argv[])
     cv::Mat demo_frame;
     utils::fps_counter fps;
     int pressed_key = 0;
+    cv::createTrackbar("r", demo_wnd, &threshold, 255);
     while (pressed_key != 27) // ESC
     {
         cap >> test.img;
@@ -62,6 +65,7 @@ int demo_feature_matching(int argc, char* argv[])
 
         detector->compute(test.img, test.corners, test.descriptors);
         //\todo add trackbar to demo_wnd to tune threshold value
+        matcher.set_ratio(threshold);
         matcher.radiusMatch(test.descriptors, ref.descriptors, pairs, 100.0f);
         cv::drawMatches(test.img, test.corners, ref.img, ref.corners, pairs, demo_frame);
 
